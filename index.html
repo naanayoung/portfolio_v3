@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>포트폴리오</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #1a1a1a;
+    background: #fff;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 48px;
+  }
+
+  /* ── 커버 ── */
+  .cover { margin-bottom: 56px; padding-bottom: 40px; border-bottom: 1px solid #e8e8e8; }
+  .cover-label { font-size: 11px; letter-spacing: 0.12em; color: #999; text-transform: uppercase; margin-bottom: 12px; }
+  .cover-name { font-size: 32px; font-weight: 700; letter-spacing: -1px; margin-bottom: 6px; }
+  .cover-role { font-size: 15px; color: #555; font-weight: 300; margin-bottom: 24px; }
+  .cover-desc { font-size: 13.5px; color: #444; line-height: 1.9; max-width: 560px; }
+  .cover-links { display: flex; gap: 20px; margin-top: 20px; }
+  .cover-links a { font-size: 12px; color: #2563eb; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .2s; }
+  .cover-links a:hover { border-color: #2563eb; }
+
+  /* ── 섹션 ── */
+  .section { margin-bottom: 64px; }
+  .section-idx { font-size: 11px; letter-spacing: 0.1em; color: #bbb; text-transform: uppercase; margin-bottom: 4px; }
+  .section-title { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .section-sub { font-size: 12.5px; color: #888; margin-bottom: 32px; }
+  .section-divider { border: none; border-top: 1px solid #f0f0f0; margin: 40px 0; }
+
+  /* ── 프로젝트 헤더 ── */
+  .proj-header { margin-bottom: 28px; }
+  .proj-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
+  .proj-meta { display: flex; gap: 16px; font-size: 12px; color: #999; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
+  .proj-meta a { color: #2563eb; text-decoration: none; }
+  .proj-summary { font-size: 13.5px; color: #555; background: #f8f8f8; border-left: 3px solid #1a1a1a; padding: 12px 16px; border-radius: 0 4px 4px 0; line-height: 1.75; }
+
+  /* ── 소항목 ── */
+  .block { margin-bottom: 28px; }
+  .block-title { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #999; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #f0f0f0; }
+  .block-text { font-size: 13.5px; color: #333; line-height: 1.85; }
+  .block-text p { margin-bottom: 8px; }
+  .block-text p:last-child { margin-bottom: 0; }
+
+  /* ── 불릿 ── */
+  ul.plain { list-style: none; padding: 0; }
+  ul.plain li { font-size: 13.5px; color: #333; padding: 4px 0 4px 16px; position: relative; line-height: 1.75; }
+  ul.plain li::before { content: "—"; position: absolute; left: 0; color: #ccc; }
+
+  /* ── 결과 카드 ── */
+  .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+  .result-card { background: #f8f8f8; border-radius: 8px; padding: 16px; text-align: center; }
+  .result-num { font-size: 22px; font-weight: 700; color: #1a1a1a; letter-spacing: -0.5px; }
+  .result-label { font-size: 11px; color: #888; margin-top: 4px; line-height: 1.5; }
+
+  /* ── 뱃지 ── */
+  .badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .badge { font-size: 11.5px; padding: 3px 10px; border-radius: 4px; background: #f0f0f0; color: #555; border: 1px solid #e8e8e8; }
+
+  /* ── 비교 박스 ── */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .compare-box { border: 1px solid #e8e8e8; border-radius: 8px; padding: 16px; }
+  .compare-box-title { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .compare-box ul { list-style: none; padding: 0; }
+  .compare-box li { font-size: 13px; color: #333; padding: 3px 0 3px 12px; position: relative; }
+  .compare-box li::before { content: "·"; position: absolute; left: 0; color: #aaa; }
+  .compare-box.selected { border-color: #1a1a1a; }
+  .compare-box.selected .compare-box-title { color: #1a1a1a; }
+
+  /* ── 인사이트 ── */
+  .insight { border: 1px solid #e8e8e8; border-radius: 8px; padding: 20px 24px; }
+  .insight-item { display: flex; gap: 12px; margin-bottom: 12px; }
+  .insight-item:last-child { margin-bottom: 0; }
+  .insight-icon { font-size: 13px; color: #aaa; min-width: 16px; padding-top: 2px; }
+  .insight-text { font-size: 13.5px; color: #333; line-height: 1.75; }
+  .insight-text strong { color: #1a1a1a; font-weight: 500; }
+
+  /* ── 네비게이션 ── */
+  html { scroll-behavior: smooth; }
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    margin: -60px -48px 48px; padding: 14px 48px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .nav-brand { font-size: 13px; font-weight: 700; letter-spacing: -0.3px; }
+  .nav-brand span { color: #999; font-weight: 400; margin-left: 6px; }
+  .nav-links { display: flex; gap: 22px; }
+  .nav-links a {
+    font-size: 12px; color: #666; text-decoration: none;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: #1a1a1a; }
+
+  /* ── 히어로 핵심 성과 ── */
+  .hero-highlights {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px; margin-top: 28px;
+  }
+  .hero-hl {
+    border: 1px solid #e8e8e8; border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .hero-hl-num {
+    font-size: 20px; font-weight: 700; letter-spacing: -0.5px;
+    color: #1a1a1a; margin-bottom: 2px;
+  }
+  .hero-hl-label { font-size: 11.5px; color: #777; line-height: 1.5; }
+
+  /* ── Tech Stack ── */
+  .stack-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px;
+  }
+  .stack-row { }
+  .stack-cat {
+    font-size: 11px; letter-spacing: 0.08em; color: #999;
+    text-transform: uppercase; margin-bottom: 8px;
+    padding-bottom: 6px; border-bottom: 1px solid #f0f0f0;
+  }
+  .stack-items { margin-top:12px; display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* ── 프로젝트 카드(개요) ── */
+  .proj-cards { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .proj-card {
+    display: block; text-decoration: none; color: inherit;
+    border: 1px solid #e8e8e8; border-radius: 10px;
+    padding: 20px 22px; transition: border-color .2s, transform .2s;
+  }
+  .proj-card:hover { border-color: #1a1a1a; transform: translateY(-1px); }
+  .proj-card-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 6px; gap: 12px; flex-wrap: wrap;
+  }
+  .proj-card-title { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+  .proj-card-period { font-size: 11.5px; color: #999; }
+  .proj-card-desc { font-size: 13px; color: #555; line-height: 1.7; margin-bottom: 12px; }
+  .proj-card-metric {
+    display: inline-block; font-size: 12px; color: #1a1a1a;
+    background: #f4f4f4; padding: 4px 10px; border-radius: 4px;
+    font-weight: 500;
+  }
+  .proj-card-arrow { float: right; color: #bbb; font-size: 14px; }
+
+  /* ── 인쇄 ── */
+  @media print {
+    body { padding: 40px 36px; }
+    .cover { page-break-after: always; }
+    .section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ NAV ══════════════ -->
+<nav class="nav">
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#projects">Projects</a>
+  </div>
+</nav>
+
+<!-- ══════════════ COVER ══════════════ -->
+<div class="cover" id="about">
+  <p class="cover-label">Portfolio</p>
+  <p class="cover-name">이나영</p><br>
+  <div class="block-text">
+    <p>▫️한 번에 완벽한 정답을 찾기보다 <strong>지속적으로 개선</strong>하며 더 나은 방향으로 다듬어가는 과정에 흥미를 갖습니다.</p>
+    <p>▫️여러 선택지가 있는 상황에서는 <strong>객관적인 근거</strong>를 찾으려 하고, 선택의 이유와 과정을 기록합니다.</p>
+    <p>▫️새로운 기술은 먼저 <strong>환경을 구성해 직접 다뤄보며</strong> 익히는 편이고, 막히는 지점을 풀어낼 때의 성취감을 원동력으로 삼습니다.</p>
+  </div>
+  <div class="cover-links">
+    <a href="https://github.com/naanayoung">GitHub</a>
+    <a href="mailto:enayoung0802@gmail.com">enayoung0802@gmail.com</a>
+  </div>
+</div>
+
+<!-- ══════════════ PROJECTS OVERVIEW ══════════════ -->
+<div class="section" id="projects">
+  <p class="section-idx">Projects</p>
+  <p class="section-title">프로젝트</p>
+  <p class="section-sub">아래 카드를 클릭하면 상세 내용으로 이동합니다</p>
+
+  <div class="proj-cards">
+    <a href="#project-01" class="proj-card">
+      <div class="proj-card-top">
+        <span class="proj-card-title">01. Kafka 기반 분산 시스템 운영·관측·부하 검증<span class="proj-card-arrow">→</span></span>
+        <span class="proj-card-period">2025.05 – 2025.06</span>
+      </div>
+      <p class="proj-card-desc">
+        지표 기반으로 컨슈머·파티션 배치 불균형을 발견하고 분산 배치로 응답 지연을 단축. 브로커 장애 실험과 EKS 배포·CI/CD까지 확장.
+      </p>
+      <span class="proj-card-metric">p95 2.06s → 33.3ms · 메시지 손실 0</span><br>
+      <div class="stack-items">
+        <span class="badge">Kafka</span><span class="badge">AWS EKS</span>
+        <span class="badge">Grafana</span><span class="badge">VictoriaMetrics</span>
+        <span class="badge">GItHub Actions</span><span class="badge">k6</span>
+      </div>
+    </a>
+
+    <a href="#project-02" class="proj-card">
+      <div class="proj-card-top">
+        <span class="proj-card-title">02. Serverless VPC 네트워크 설계와 비용 구조 비교 분석<span class="proj-card-arrow"> →</span></span>
+        <span class="proj-card-period">2025.03</span>
+      </div>
+      <p class="proj-card-desc">
+        서버리스 비동기 파이프라인을 설계하고 NAT Gateway와 VPC Endpoint 두 구성의 비용 구조를 직접 비교. AWS CDK로 IaC 구현.
+      </p>
+      <span class="proj-card-metric">VPC Endpoint 전환 시 36%+ 비용 절감</span>
+      <div class="stack-items">
+        <span class="badge">AWS Lambda</span><span class="badge">API Gateway</span>
+        <span class="badge">SQS</span><span class="badge">DynamoDB</span>
+        <span class="badge">VPC</span><span class="badge">AWS CDK</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+
+<!-- ══════════════ PROJECT 1 ══════════════ -->
+<div class="section" id="project-01">
+  <p class="section-idx">Project 01</p>
+  <p class="section-title">Kafka 기반 분산 시스템 운영·관측·부하 검증</p>
+  <p class="section-sub">2025.05 – 2025.06 &nbsp;·&nbsp; 개인 프로젝트 &nbsp;·&nbsp; <a href="https://github.com/naanayoung/kafka-multi-broker" style="color:#2563eb;text-decoration:none;">GitHub</a></p>
+
+  <div class="proj-summary">
+    지표 기반의 워크로드 분석으로 컨슈머·파티션 배치 불균형을 발견하고, 분산 배치를 통해 응답 지연을 2.06s에서 33.3ms로 단축했습니다. 브로커 장애 실험으로 메시지 손실 없이 처리 흐름이 유지됨을 검증하고, 이후 EKS 배포와 CI/CD 파이프라인 구성까지 확장했습니다.
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- 배경 -->
+  <div class="block">
+    <p class="block-title">배경 및 목표</p>
+    <div class="block-text">
+      <p>단순히 Kafka를 설치하고 메시지를 주고받는 수준을 넘어서, 실제 운영 환경처럼 분산 구성을 갖추고 그 위에서 시스템이 어떻게 동작하는지를 직접 관찰하고 싶었습니다.</p>
+      <p>특히 관측 가능성의 개념을 직접 경험해보는 것이 핵심 목표였습니다. 부하를 가하고, 지표를 보고, 문제를 찾고, 개선하는 사이클을 한 번 완성하는 것을 목표로 설정했습니다.</p>
+    </div>
+  </div>
+
+  <!-- 아키텍처 선택 -->
+  <div class="block">
+    <p class="block-title">아키텍처 선택 — 트레이드오프</p>
+    <div class="block-text">
+      <p>멀티 브로커 구성을 위해 AWS EC2(t3.medium) 3대를 선택했습니다. 브로커 간 통신, 리더 재선출, ISR 변화를 더 실제 운영 환경에 가깝게 관찰하기 위해 서로 다른 EC2 인스턴스에 브로커를 분산 배치했습니다.</p>
+      <p>모니터링 스택은 처음에 Prometheus로 구성했다가 VictoriaMetrics로 전환했습니다. 초기에는 Prometheus로 지표를 수집했지만, 이 프로젝트에서는 장기 저장보다 경량 수집과 원격 저장 구조가 더 중요하다고 판단했기에 수집은 vmagent, 저장은 VictoriaMetrics로 분리했습니다. vmagent가 Prometheus 스크래핑 설정을 그대로 사용할 수 있어 기존 exporter 생태계를 그대로 유지하면서 모니터링 구조를 단순화할 수 있다는 점도 함께 고려했습니다.</p>
+    </div>
+  </div>
+
+  <!-- 구현 -->
+  <div class="block">
+    <p class="block-title">구현 내용</p>
+    <ul class="plain">
+      <li>EC2 3대에 Docker Compose로 Kafka 멀티 브로커 클러스터 구축. 각 노드에 kafka-exporter, cAdvisor 배포</li>
+      <li>vmagent가 각 노드의 지표를 수집해 VictoriaMetrics로 전달, Grafana에서 Lag·Latency·컨테이너 리소스를 단일 대시보드로 통합</li>
+      <li>쿠폰 발급 요청을 받은 Django API 서버가 Kafka에 메시지를 전송하고, 컨슈머 컨테이너 6개로 분산 처리 흐름 재현</li>
+      <li>k6로 5,000 / 10,000 / 15,000 / 18,000건 단계별 부하 테스트 진행. 싱글 브로커 → 멀티 브로커 전환 전후를 동일 조건(180초, 15,000건)에서 비교해 수치로 검증</li>
+    </ul>
+    <div class="badge-row" style="margin-top:14px">
+      <span class="badge">Kafka</span><span class="badge">AWS EC2</span><span class="badge">Docker Compose</span>
+      <span class="badge">k6</span><span class="badge">Prometheus</span><span class="badge">VictoriaMetrics</span>
+      <span class="badge">Grafana</span><span class="badge">Django</span><span class="badge">MySQL</span>
+    </div>
+  </div>
+
+  <!-- 문제 발견 -->
+  <div class="block">
+    <p class="block-title">문제 발견 → 분석 → 개선</p>
+    <div class="block-text">
+      <p><strong>1. 워크로드 편중 발견</strong><br>
+      멀티 브로커로 전환한 뒤 동일 조건으로 부하 테스트를 재실행했는데, 인프라를 확장했음에도 p95 응답 지연이 오히려 약 9.4배 증가했습니다. 자원과 메시지 처리 컨테이너를 늘렸는데도 성능이 떨어졌다는 점이 이상해 Grafana 대시보드를 점검했고, EC2 인스턴스 간 CPU 사용률 편차가 크다는 것을 발견했습니다. 특정 인스턴스가 78%까지 치솟는 동안 다른 인스턴스는 20% 수준에 머물렀습니다. 컨슈머 배치 현황을 확인하자 원인이 명확해졌습니다. 총 6개의 컨슈머 컨테이너가 모두 같은 EC2 인스턴스에 몰려 있었고, 파티션의 리더도 같은 브로커에 집중된 상태였습니다.</p>
+      <p><strong>2. 분산 배치로 개선</strong><br>
+      각 EC2에 브로커 1개 + 컨슈머 2개씩 균등 배치하고, 파티션 리더도 분산되도록 조정했습니다. 이후 동일 조건으로 부하 테스트를 재실행하자 응답 지연(p95)이 2.06s에서 33.3ms로 단축됐고, 피크 CPU 사용률이 78% → 68%로 낮아졌습니다. 가장 부하가 높았던 컨테이너 기준으로는 약 47% 완화되었습니다.</p>
+      <p><strong>3. 추가 병목 식별</strong><br>
+      분산 배치 이후에도 최대 부하 구간에서 응답 지연이 남아 있었습니다. 쿼리 실행 로그를 분석한 결과 MySQL I/O 비용이 병목임을 확인했습니다. 메시지 처리마다 DB 쓰기가 발생하는 구조였기 때문에, 컨슈머 처리량이 늘어날수록 DB가 따라오지 못하는 상황이었습니다. 서비스 확장 시, DB 전용 EC2 분리를 개선 방안으로 정리했습니다.</p>
+    </div>
+  </div>
+
+  <!-- 결과 -->
+  <div class="block">
+    <p class="block-title">측정 결과</p>
+    <div class="result-grid">
+      <div class="result-card">
+        <div class="result-num">2.06s → 33.3ms</div>
+        <div class="result-label">p95 응답 지연 단축</div>
+      </div>
+      <div class="result-card">
+        <div class="result-num">메시지 손실 0</div>
+        <div class="result-label">브로커 장애 실험</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px;">
+    <img src="images/Kafka.png" style="width:100%; border-radius:8px; border:1px solid #e8e8e8;" alt="Kafka 테스트 결과">
+    <p style="font-size:12px; color:#999; text-align:center; margin-top:8px;">컨슈머 분산 배치 전후 CPU 사용률 비교 (Grafana)</p>
+  </div>
+  <br>
+
+  <!-- 장애 실험 -->
+  <div class="block">
+    <p class="block-title">장애 내성 검증</p>
+    <div class="block-text">
+      <p>부하 테스트 중 브로커 1대를 강제 종료해 장애 상황을 재현했습니다. 리더 재선출 과정과 ISR(In-Sync Replica) 변화를 실시간으로 관찰했고, 메시지 손실 없이 서비스가 지속됨을 확인했습니다. 테스트 전후 producer 발행 건수와 consumer 처리 완료 건수, DB 저장 건수를 비교해 누락 여부를 확인했습니다. 이 과정에서 acks=all, replication.factor=3, min.insync.replicas=2 설정이 실제로 어떻게 동작하는지 체감할 수 있었습니다.</p>
+    </div>
+  </div>
+
+  <!--K8s 확장-->
+  <div class="block">
+    <p class="block-title">구현 확장 - EKS 배포 및 CI/CD 구성</p>
+    <ul class="plain">
+      <li>Docker Compose 기반 구성을 EKS로 전환. eksctl 명령으로 VPC, 서브넷, IAM 역할, EC2 워커 노드 2대가 포함된 Managed Node Group을 자동 구성.</li>
+      <li>Kafka 클러스터는 Strimzi Operator의 CR(Custom Resource)로 선언해 브로커 3대 배포. KafkaNodePool로 replicas를 관리하고, Strimzi가 StatefulSet·Service·PVC를 자동 생성.</li>
+      <li>애플리케이션 코드는 수정 없이 환경변수만 교체. 서비스 간 통신 주소를 EC2 IP에서 K8s Service DNS로 변경하고 ConfigMap으로 분리.</li>
+      <li>GitHub Actions로 CI/CD 파이프라인 구축. 코드 변경 시 이미지 빌드 → GHCR push → EKS 자동 배포까지 실행. </li>
+    </ul>
+    <div class="badge-row" style="margin-top:14px">
+      <span class="badge">Kubernetes</span><span class="badge">EKS</span><span class="badge">eksctl</span><span class="badge">Strimzi</span><span class="badge">GitHub Actions</span>
+    </div>
+  </div> 
+
+  <!-- 정리 -->
+  <div class="block">
+    <p class="block-title">정리</p>
+    <div class="insight">
+      <div class="insight-item">
+        <span class="insight-icon">→</span>
+        <p class="insight-text"><strong>관측 가능성.</strong> 애플리케이션 코드부터 확인하기보다 Grafana 대시보드에서 CPU 편차를 먼저 발견했습니다. 관측 가능성이 갖춰진 시스템에서는 문제가 로그나 코드보다 지표에서 먼저 드러난다는 점을 경험했습니다.</p>
+      </div>
+      <div class="insight-item">
+        <span class="insight-icon">→</span>
+        <p class="insight-text"><strong>확장보다 배치가 중요하다는 점.</strong> 시스템 확장은 단순히 자원을 늘리는 것이 아니라, 실제 처리 흐름과 병목 위치를 함께 고려해야 한다는 점을 배웠습니다</p>
+      </div>
+      <div class="insight-item">
+        <span class="insight-icon">→</span>
+        <p class="insight-text"><strong>동일 조건 검증.</strong> 개선 효과는 동일한 부하 조건에서 비교했습니다. k6 테스트 조건을 180초, 15,000건 요청으로 고정하고 p95 응답 지연과 CPU 사용률을 기준으로 개선 전후를 비교해, 분산 배치가 성능 개선에 미친 영향을 수치로 확인했습니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════ PROJECT 2 ══════════════ -->
+<div class="section" id="project-02">
+  <p class="section-idx">Project 02</p>
+  <p class="section-title">Serverless VPC 네트워크 설계와 비용 구조 비교 분석</p>
+  <p class="section-sub">2025.03 &nbsp;·&nbsp; 개인 프로젝트 &nbsp;·&nbsp; <a href="https://github.com/naanayoung/aws-event-reservation-system" style="color:#2563eb;text-decoration:none;">GitHub</a></p>
+
+  <div class="proj-summary">
+    서버리스 자원을 활용한 비동기 파이프라인을 설계하고, NAT Gateway와 VPC Endpoint 두 아키텍처의 비용 구조를 직접 비교 분석했습니다. AWS CDK로 IaC를 구현하고, VPC Endpoint 전환 시 최소 36% 비용 절감 시나리오를 도출했습니다.
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="block">
+    <p class="block-title">배경 및 목표</p>
+    <div class="block-text">
+      <p>이벤트 예약 시스템은 평소와 피크 타임의 요청량 차이가 크다는 특성이 있습니다. 때문에 서버를 상시 운영하는 구조에서는 유휴 비용이 크고, 피크 타임에는 확장성을 별도로 고려해야 합니다. 이 문제를 해결하기 위해 트래픽에 따라 자동 확장되는 서버리스 자원을 선택했습니다. 설계 과정에서 Private Subnet에 배치한 Lambda가 AWS 관리형 서비스에 접근하는 경로로 NAT Gateway와 VPC Endpoint 두 가지를 검토했고, 두 방법의 비용 구조 차이를 실제 수치로 비교해보고 싶었습니다.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <p class="block-title">아키텍처 설계 — 트레이드오프</p>
+    <div class="block-text">
+      <p>Lambda는 Private Subnet 배치를 선택했습니다. 이 경우 Lambda가 SQS·SNS·DynamoDB 같은 AWS 관리형 서비스에 접근하기 위한 네트워크 경로가 필요합니다. NAT Gateway를 통한 아웃바운드 경로와 VPC Endpoint를 통한 프라이빗 연결 경로를 비교했습니다.</p>
+    </div>
+    <div class="compare" style="margin-top:12px">
+      <div class="compare-box">
+        <p class="compare-box-title">Option A — NAT Gateway</p>
+        <ul>
+          <li>구성이 단순하고 범용적</li>
+          <li>인터넷을 경유해 AWS 서비스 접근</li>
+          <li>시간당 고정 비용 + 데이터 처리 비용 발생</li>
+          <li>트래픽이 늘수록 증가 폭이 커짐</li>
+        </ul>
+      </div>
+      <div class="compare-box selected">
+        <p class="compare-box-title">Option B — VPC Endpoint ✓ 선택</p>
+        <ul>
+          <li>서비스별·AZ별 Endpoint 구성 필요</li>
+          <li>AWS 내부망 경유, 인터넷 미경유</li>
+          <li>AZ당 고정 비용 + 데이터 처리 비용 발생</li>
+          <li>트래픽이 많을수록 절감 폭이 커짐</li>
+        </ul>
+      </div>
+    </div>
+  <div style="margin-top:16px;">
+    <img src="images/Serverless Architecture.png" style="width:100%; border-radius:8px; border:1px solid #e8e8e8;" alt="아키텍처 비교">
+    <p style="font-size:12px; color:#999; text-align:center; margin-top:8px;">NAT Gateway 기반 실제 구축 아키텍처 vs VPC Endpoint 기반 설계 아키텍처</p>
+  </div>
+  </div>
+
+  <div class="block">
+    <p class="block-title">비용 분석 결과</p>
+    <div class="block-text">
+      <p>AWS Pricing Calculator로 2-AZ 환경에서 월 30만 건 요청과 AWS 관리형 서비스 접근 기준으로 시뮬레이션했습니다.</p>
+    </div>
+    <div class="result-grid" style="margin-top: 12px; grid-template-columns: 1fr 1fr;">
+      <div class="result-card">
+        <div class="result-num">36%+</div>
+        <div class="result-label">VPC Endpoint 전환 시<br>비용 절감</div>
+      </div>
+      <div class="result-card">
+        <div class="result-num">2 vs 7</div>
+        <div class="result-label">NAT Gateway 개수<br>vs VPC Endpoint 개수</div>
+      </div>
+    </div>
+    <div class="block-text" style="margin-top:12px">
+      <p>VPC Endpoint는 구성 복잡도가 높지만, 해당 조건에서 약 36%의 비용 절감 가능하며 낮은 데이터 처리 비용 덕에 트래픽이 클수록 절감 폭이 커집니다.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <p class="block-title">구현 — 파이프라인 및 안정성</p>
+    <ul class="plain">
+      <li>API Gateway → Lambda(예약 요청) → SQS FIFO → Lambda(예약 처리) → DynamoDB 비동기 파이프라인. Lambda 처리 실패 시 SQS 자동 재전달로 안정성 확보</li>
+      <li>SQS FIFO에서 좌석 기준으로 메시지 그룹을 분리해 동일 좌석의 요청을 순차 처리</li>
+      <li>Request ID + DynamoDB 조건부 업데이트로 재시도·중복 요청에도 멱등성 보장</li>
+      <li>SQS Batch Size 1→5 조절 및 앞단 Lambda에 Provisioned Concurrency 적용으로 Cold Start로 인한 초기 응답 지연 완화</li>
+      <li>AWS CDK로 전체 인프라를 NetworkStack, ApplicationStack, DatabaseStack 등 6개 스택으로 분리해 IaC 구현</li>
+      <li>CloudWatch Alarm과 SNS 이메일 구독으로 운영 알람 구성</li>
+    </ul>
+    <div class="badge-row" style="margin-top:14px">
+      <span class="badge">AWS Lambda</span><span class="badge">API Gateway</span><span class="badge">SQS</span>
+      <span class="badge">SNS</span><span class="badge">DynamoDB</span><span class="badge">VPC</span>
+      <span class="badge">CloudWatch</span><span class="badge">AWS CDK</span>
+    </div>
+  </div>
+      
+  <div class="block">
+    <p class="block-title">정리</p>
+    <div class="insight">
+      <div class="insight-item">
+        <span class="insight-icon">→</span>
+        <p class="insight-text"><strong>요구사항에 따라 달라지는 최적의 구성.</strong> 비용 효율을 우선 기준으로 두었기 때문에 VPC Endpoint 구성이 적합했지만, 트래픽 특성과 여러 요구사항에 따라 최적의 구성은 달라질 수 있었습니다. 특정 기술의 장단점보다 서비스 환경과 우선순위에 따른 근거를 비교하고 최적의 선택을 도출하는 과정이 중요함을 확인했습니다. </p>
+      </div>
+      <div class="insight-item">
+        <span class="insight-icon">→</span>
+        <p class="insight-text"><strong>역할 기준의 IaC 분리.</strong> 처음에는 CDK 스택을 기능 기준(예약 요청 / 예약 처리 / 취소)으로 나누어 구성해 시스템이 커질수록 스택 간 참조가 복잡해졌습니다. 이후 Network, Compute, Database와 같이 역할 기준으로 재구성해 더 명확하게 정리했습니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body>
+</html>
