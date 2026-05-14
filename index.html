@@ -356,7 +356,7 @@
   <p class="section-sub">2025.03 &nbsp;·&nbsp; 개인 프로젝트 &nbsp;·&nbsp; <a href="https://github.com/naanayoung/aws-event-reservation-system" style="color:#2563eb;text-decoration:none;">GitHub</a></p>
 
   <div class="proj-summary">
-    이벤트 예약 시스템을 서버리스 비동기 파이프라인으로 설계하고 AWS CDK로 IaC를 구현했습니다. 콘솔에서 수동 설정한 구성을 코드로 전환하며 발생한 드리프트를 정리하고, 배포·롤백·런타임·성능 전반에서 마주친 장애를 추적·해결했습니다. 더불어 NAT Gateway와 VPC Endpoint 두 네트워크 구성의 비용 구조를 비교해 최소 36% 절감 시나리오를 도출했습니다.
+    이벤트 예약 시스템을 서버리스 비동기 파이프라인으로 설계하고 AWS CDK로 IaC를 구현했습니다. 콘솔에서 수동으로 설정한 구성을 코드로 전환하는 과정에서 코드와 실제 인프라가 불일치하는 문제를 정리하고, 배포·롤백·런타임·성능 전반에서 마주친 장애를 추적·해결했습니다. 더불어 NAT Gateway와 VPC Endpoint 두 네트워크 구성의 비용 구조를 비교해 최소 36% 절감 시나리오를 도출했습니다.
   </div>
 
   <hr class="section-divider">
@@ -389,10 +389,10 @@
 
   <!-- IaC 구축 -->
   <div class="block">
-    <p class="block-title">IaC 구축 — 콘솔 설정의 코드 이관</p>
+    <p class="block-title">IaC 구축 — 콘솔 설정을 코드 전환</p>
     <div class="block-text">
       <p>전체 인프라를 AWS CDK로 Network, Application, Database, Storage, Monitoring, Compute 6개 스택으로 분리해 역할 기준으로 구성했습니다.</p>
-      <p>초기에는 일부 설정(Lambda의 VPC 연결, SQS Batch Size, Provisioned Concurrency용 alias)을 콘솔에서 수동으로 적용한 상태였습니다. 이 경우 <code>cdk destroy</code> 후 재배포 시 수동 설정이 사라지고, 코드와 실제 인프라가 불일치하는 문제가 발생합니다. 실제로 코드의 Batch Size와 콘솔 운영값이 어긋나 있는 것을 확인했고, 세 항목을 모두 CDK 코드로 이관해 인프라 상태를 코드만으로 재현할 수 있도록 정리했습니다.</p>
+      <p>초기에는 일부 설정(Lambda의 VPC 연결, SQS Batch Size, Provisioned Concurrency용 alias)을 콘솔에서 수동으로 적용한 상태였습니다. 이 경우 <code>cdk destroy</code> 후 재배포 시 수동 설정이 사라지고, 코드와 실제 인프라가 불일치하는 문제가 발생합니다. 실제로 코드의 Batch Size와 콘솔 운영값이 다르게 설정돼 있는 것을 확인했고, 세 항목을 모두 CDK 코드로 이관해 인프라 상태를 코드만으로 재현할 수 있도록 정리했습니다.</p>
     </div>
     <div class="badge-row" style="margin-top:14px">
       <span class="badge">AWS Lambda</span><span class="badge">API Gateway</span><span class="badge">SQS</span>
@@ -407,7 +407,7 @@
     <div class="block-text">
       <p>구축·운영 과정에서 마주친 장애를 <strong>증상 → 원인 → 해결 → 재발 방지</strong> 형식으로 기록했습니다. 배포·롤백·런타임·성능 등 운영의 여러 단계에서 발생하는 서로 다른 성격의 문제들을 다뤘습니다.</p>
       <p style="margin-top:10px"><strong>1. 런타임 — 핸들러 모듈 로드 실패</strong><br>
-      배포 후 API가 500을 반환했고, CloudWatch 로그에서 <code>Runtime.ImportModuleError</code>를 확인했습니다. 배포 패키지를 열어보니 TypeScript 핸들러가 트랜스파일되지 않은 채 포함돼 있었습니다. <code>Code.fromAsset</code>이 디렉터리를 단순 압축만 한다는 점을 파악하고, esbuild를 수행하는 <code>NodejsFunction</code>으로 전환해 빌드 단계를 IaC에 포함시켰습니다.</p>
+      배포 후 API가 500을 반환했고, CloudWatch 로그에서 <code>Runtime.ImportModuleError</code>를 확인했습니다. 배포 패키지를 열어보니 TypeScript 핸들러가 트랜스파일되지 않은 채 포함돼 있었습니다. <code>Code.fromAsset</code>이 디렉터리를 단순 압축만 한다는 점을 파악하고, esbuild로 빌드를 수행하는 <code>NodejsFunction</code>으로 전환해 빌드 단계를 IaC에 포함시켰습니다.</p>
       <p style="margin-top:10px"><strong>2. 롤백 — Lambda VPC ENI 의존성으로 인한 정체</strong><br>
       배포 실패 후 롤백 과정에서 Security Group 삭제가 <code>DELETE_FAILED</code>로 약 30분간 멈췄습니다. Lambda를 VPC에 연결할 때 생성되는 ENI의 정리 지연이 원인이었고, CloudFormation이 ENI 해제 전에 SG 삭제를 시도하기 때문임을 확인했습니다. Lambda의 VPC 구성 변경은 배포뿐 아니라 롤백도 느리다는 점을 운영 전제로 정리했습니다.</p>
       <p style="margin-top:10px"><strong>3. 성능 — 부하 테스트로 콜드스타트 병목 정량화</strong><br>
@@ -417,7 +417,7 @@
 
   <!-- 비용 분석 -->
   <div class="block">
-    <p class="block-title">네트워크 비용 구조 비교 분석</p>
+    <p class="block-title">네트워크 구성 선택 - 비용 구조 비교</p>
     <div class="block-text">
       <p>Private Subnet의 Lambda가 SQS·SNS·DynamoDB 등 관리형 서비스에 접근하는 경로로 NAT Gateway와 VPC Endpoint 두 구성을 검토하고, 비용 구조를 비교했습니다. AWS Pricing Calculator로 2-AZ 환경, 월 30만 건 요청 기준으로 시뮬레이션했습니다.</p>
     </div>
