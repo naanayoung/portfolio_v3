@@ -158,100 +158,6 @@
     .cover { page-break-after: always; }
     .section { page-break-inside: avoid; }
   }
-
-/* ── 운영 사례 카드 ── */
-.ops-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 14px;
-}
-.ops-card {
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  padding: 18px 20px;
-  background: #fff;
-  transition: border-color .2s;
-}
-.ops-card:hover { border-color: #d0d0d0; }
-
-.ops-card-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-.ops-card-tag {
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  color: #999;
-  text-transform: uppercase;
-}
-.ops-card-cat {
-  font-size: 11px;
-  font-weight: 500;
-  color: #1a1a1a;
-  background: #f0f0f0;
-  padding: 2px 9px;
-  border-radius: 3px;
-  letter-spacing: 0.02em;
-}
-.ops-card-title {
-  font-size: 14.5px;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: -0.2px;
-  margin-bottom: 12px;
-}
-.ops-card-body p {
-  font-size: 13px;
-  color: #333;
-  line-height: 1.75;
-  margin-bottom: 6px;
-}
-.ops-card-body p:last-child { margin-bottom: 0; }
-.ops-label {
-  display: inline-block;
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: #888;
-  text-transform: uppercase;
-  margin-right: 8px;
-  min-width: 32px;
-}
-.ops-card-body code {
-  font-size: 12px;
-  background: #f5f5f5;
-  padding: 1px 5px;
-  border-radius: 3px;
-  color: #1a1a1a;
-}
-
-.ops-card-image {
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid #f0f0f0;
-}
-.ops-card-image img {
-  width: 100%;
-  border-radius: 6px;
-  border: 1px solid #e8e8e8;
-}
-.ops-card-image-caption {
-  font-size: 11.5px;
-  color: #999;
-  text-align: center;
-  margin-top: 6px;
-}
-
-
-
-
-
-
-  
 </style>
 </head>
 <body>
@@ -506,6 +412,10 @@
       배포 실패 후 롤백 과정에서 Security Group 삭제가 <code>DELETE_FAILED</code>로 약 30분간 멈췄습니다. Lambda를 VPC에 연결할 때 생성되는 ENI의 정리 지연이 원인이었고, CloudFormation이 ENI 해제 전에 SG 삭제를 시도하기 때문임을 확인했습니다. Lambda의 VPC 구성 변경은 배포뿐 아니라 롤백도 느리다는 점을 운영 전제로 정리했습니다.</p>
       <p style="margin-top:10px"><strong>3. 성능 — 부하 테스트로 콜드스타트 병목 정량화</strong><br>
       Artillery로 부하 테스트를 수행한 결과, median 응답은 50ms 수준으로 안정적이나 p99는 1,400ms까지 튀는 현상을 확인했습니다. Lambda가 Private Subnet 안에 위치한 점과, Lambda의 cold start 문제가 중첩되어 이런 현상이 발생했다는 가설을 세웠고, 검증하기 위해 동일 시나리오(초당 10건, 100건)를 연속 3회 수행했습니다. 그러자 p99가 1,400ms → 297ms → 97ms로 단계적으로 안정화됐고, mediam은 49ms → 48ms → 46ms로 거의 변하지 않아, 꼬리 지연의 원인이 VPC ENI 생성을 포함한 콜드스타트임을 확인했습니다. 계정 동시성 한도 상향 후 Provisioned Concurrency를 적용하는 것이 직접적 개선 방향임을 정리했습니다.</p>
+      <div style="margin-top:16px;">
+        <img src=images/loadtest_coldstart.png" style="width:100%; border-radius:8px; border:1px solid #e8e8e8;" alt="load test 결과">
+        <p style="font-size:12px; color:#999; text-align:center; margin-top:8px;">3번의 연속 부하 테스트 결과 - Latency 분포</p>
+      </div>
     </div>
   </div>
 
@@ -553,69 +463,5 @@
     </div>
   </div>
 </div>
-
-
-<!-- 운영 / 트러블슈팅 -->
-<div class="block">
-  <p class="block-title">운영 — 장애 추적 및 해결</p>
-  <div class="block-text">
-    <p>구축·운영 과정에서 마주친 장애를 <strong>증상 → 원인 → 해결 → 재발 방지</strong> 형식으로 기록했습니다. 배포·롤백·런타임·성능 등 운영의 여러 단계에서 발생하는 서로 다른 성격의 문제들을 다뤘습니다.</p>
-  </div>
-
-  <div class="ops-cards">
-
-    <!-- Case 1. 런타임 -->
-    <div class="ops-card">
-      <div class="ops-card-head">
-        <span class="ops-card-tag">Case 01</span>
-        <span class="ops-card-cat">런타임</span>
-      </div>
-      <p class="ops-card-title">핸들러 모듈 로드 실패</p>
-      <div class="ops-card-body">
-        <p><span class="ops-label">증상</span> 배포 후 API가 500을 반환. CloudWatch 로그에서 <code>Runtime.ImportModuleError</code> 확인.</p>
-        <p><span class="ops-label">원인</span> 배포 패키지를 열어보니 TypeScript 핸들러가 트랜스파일되지 않은 채 포함. <code>Code.fromAsset</code>이 디렉터리를 단순 압축만 한다는 점이 원인.</p>
-        <p><span class="ops-label">해결</span> esbuild로 빌드를 수행하는 <code>NodejsFunction</code>으로 전환해 빌드 단계를 IaC에 포함.</p>
-      </div>
-    </div>
-
-    <!-- Case 2. 롤백 -->
-    <div class="ops-card">
-      <div class="ops-card-head">
-        <span class="ops-card-tag">Case 02</span>
-        <span class="ops-card-cat">롤백</span>
-      </div>
-      <p class="ops-card-title">Lambda VPC ENI 의존성으로 인한 정체</p>
-      <div class="ops-card-body">
-        <p><span class="ops-label">증상</span> 배포 실패 후 롤백 과정에서 Security Group 삭제가 <code>DELETE_FAILED</code>로 약 30분간 멈춤.</p>
-        <p><span class="ops-label">원인</span> Lambda를 VPC에 연결할 때 생성되는 ENI의 정리 지연. CloudFormation이 ENI 해제 전에 SG 삭제를 시도하기 때문.</p>
-        <p><span class="ops-label">해결</span> Lambda의 VPC 구성 변경은 배포뿐 아니라 롤백도 느리다는 점을 운영 전제로 정리. 변경 시 충분한 대기 시간 확보를 룰로 추가.</p>
-      </div>
-    </div>
-
-    <!-- Case 3. 성능 -->
-    <div class="ops-card">
-      <div class="ops-card-head">
-        <span class="ops-card-tag">Case 03</span>
-        <span class="ops-card-cat">성능</span>
-      </div>
-      <p class="ops-card-title">부하 테스트로 콜드스타트 병목 정량화</p>
-      <div class="ops-card-body">
-        <p><span class="ops-label">증상</span> Artillery로 초당 100 요청 부하 테스트 결과, median 응답은 62ms로 안정적이나 p99는 975ms까지 상승.</p>
-        <p><span class="ops-label">원인</span> p95·p99 분포를 보면서 지연이 VPC 콜드스타트 구간에 집중된다는 것을 확인.</p>
-        <p><span class="ops-label">해결</span> 계정 동시성 한도 상향 후 Provisioned Concurrency 적용을 개선 방향으로 정리.</p>
-      </div>
-      <div class="ops-card-image">
-        <img src="images/load-test-result.png" alt="Artillery 부하 테스트 결과 그래프">
-        <p class="ops-card-image-caption">Artillery 부하 테스트 결과 — 응답 시간 분포</p>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-
-
-  
-
 </body>
 </html>
