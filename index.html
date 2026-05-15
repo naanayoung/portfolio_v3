@@ -417,9 +417,9 @@
 
   <!-- 비용 분석 -->
   <div class="block">
-    <p class="block-title">네트워크 구성 선택 - 비용 구조 비교</p>
+    <p class="block-title">운영 - 비용 구조 점검과 개선안 도출</p>
     <div class="block-text">
-      <p>Private Subnet의 Lambda가 SQS·SNS·DynamoDB 등 관리형 서비스에 접근하는 경로로 NAT Gateway와 VPC Endpoint 두 구성을 검토하고, 비용 구조를 비교했습니다. AWS Pricing Calculator로 2-AZ 환경, 월 30만 건 요청 기준으로 시뮬레이션했습니다.</p>
+      <p>NAT Gateway로 구축 후 비용 구조를 점검하면서, Private Subnet의 Lambda가 SQS·SNS·DynamoDB 등 관리형 서비스에 접근하는 경로를 VPC Endpoint로 대체했을 떄의 비용을 비교 검토했습니다. AWS Pricing Calculator로 2-AZ 환경, 월 30만건 요청 기준으로 시뮬레이션했습니다. </p>
     </div>
     <div class="result-grid" style="margin-top:12px; grid-template-columns: 1fr 1fr;">
       <div class="result-card">
@@ -432,7 +432,11 @@
       </div>
     </div>
     <div class="block-text" style="margin-top:12px">
-      <p>VPC Endpoint는 서비스별·AZ별 개별 구성이 필요해 복잡도가 높지만, 데이터 처리 비용이 낮아 해당 조건에서 약 36% 절감이 가능하며 트래픽이 클수록 절감 폭이 커집니다.</p>
+      <p>VPC Endpoint는 서비스별·AZ별 개별 구성이 필요해 복잡도가 높지만, 데이터 처리 비용이 낮아 해당 조건에서 약 36% 절감이 가능하고, 트래픽이 클수록 절감 폭이 커집니다.</p>
+    </div>
+    <div style="margin-top:16px;">
+      <img src=images/VPCE.png" style="width:100%; border-radius:8px; border:1px solid #e8e8e8;" alt="VPC Endpoint 기반 아키텍처">
+      <p style="font-size:12px; color:#999; text-align:center; margin-top:8px;">VPC Endpoint 기반 대안 아키텍처</p>
     </div>
   </div>
 
