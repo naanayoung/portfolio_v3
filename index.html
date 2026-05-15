@@ -411,7 +411,7 @@
       <p style="margin-top:10px"><strong>2. 롤백 — Lambda VPC ENI 의존성으로 인한 정체</strong><br>
       배포 실패 후 롤백 과정에서 Security Group 삭제가 <code>DELETE_FAILED</code>로 약 30분간 멈췄습니다. Lambda를 VPC에 연결할 때 생성되는 ENI의 정리 지연이 원인이었고, CloudFormation이 ENI 해제 전에 SG 삭제를 시도하기 때문임을 확인했습니다. Lambda의 VPC 구성 변경은 배포뿐 아니라 롤백도 느리다는 점을 운영 전제로 정리했습니다.</p>
       <p style="margin-top:10px"><strong>3. 성능 — 부하 테스트로 콜드스타트 병목 정량화</strong><br>
-      Artillery로 초당 100 요청 부하 테스트를 수행한 결과, median 응답은 62ms로 안정적이나 p99는 975ms까지 상승했습니다. p95·p99 분포를 보면서 지연이 VPC 콜드스타트 구간에 집중된다는 것을 확인했고, 계정 동시성 한도 상향 후 Provisioned Concurrency 적용을 개선 방향으로 정리했습니다.</p>
+      Artillery로 부하 테스트를 수행한 결과, median 응답은 50ms 수준으로 안정적이나 p99는 1,400ms까지 튀는 현상을 확인했습니다. Lambda가 Private Subnet 안에 위치한 점과, Lambda의 cold start 문제가 중첩되어 이런 현상이 발생했다는 가설을 세웠고, 검증하기 위해 동일 시나리오(초당 10건, 100건)를 연속 3회 수행했습니다. 그러자 p99가 1,400ms → 297ms → 97ms로 단계적으로 안정화됐고, mediam은 49ms → 48ms → 46ms로 거의 변하지 않아, 꼬리 지연의 원인이 VPC ENI 생성을 포함한 콜드스타트임을 확인했습니다. 계정 동시성 한도 상향 후 Provisioned Concurrency를 적용하는 것이 직접적 개선 방향임을 정리했습니다.</p>
     </div>
   </div>
 
