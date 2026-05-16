@@ -423,7 +423,7 @@
       <p style="margin-top:10px"><strong>3. 성능 — 부하 테스트로 콜드스타트 병목 정량화</strong><br>
       Artillery로 부하 테스트를 수행한 결과, median 응답은 50ms 수준으로 안정적이나 p99는 1,400ms까지 튀는 현상을 확인했습니다. Lambda가 Private Subnet 안에 위치한 점과, Lambda의 cold start 문제가 중첩되어 이런 현상이 발생했다는 가설을 세웠고, 검증하기 위해 동일 시나리오(초당 10건, 100건)를 연속 3회 수행했습니다. 그러자 p99가 1,400ms → 297ms → 97ms로 단계적으로 안정화됐고, mediam은 49ms → 48ms → 46ms로 거의 변하지 않아, 꼬리 지연의 원인이 VPC ENI 생성을 포함한 콜드스타트임을 확인했습니다. 계정 동시성 한도 상향 후 Provisioned Concurrency를 적용하는 것이 직접적 개선 방향임을 정리했습니다.</p>
       <div style="margin-top:16px;">
-        <img src=images/loadtest_coldstart.png" style="width:100%; border-radius:8px; border:1px solid #e8e8e8;" alt="load test 결과">
+        <img src="images/loadtest_coldstart.png" style="width:100%; border-radius:8px; border:1px solid #e8e8e8;" alt="load test 결과">
         <p style="font-size:12px; color:#999; text-align:center; margin-top:8px;">3번의 연속 부하 테스트 결과 - Latency 분포</p>
       </div>
     </div>
@@ -449,7 +449,7 @@
       <p>VPC Endpoint는 서비스별·AZ별 개별 구성이 필요해 복잡도가 높지만, 데이터 처리 비용이 낮아 해당 조건에서 약 36% 절감이 가능하고, 트래픽이 클수록 절감 폭이 커집니다.</p>
     </div>
     <div style="margin-top:16px;">
-      <img src=images/VPCE.png" style="width:100%; border-radius:8px; border:1px solid #e8e8e8;" alt="VPC Endpoint 기반 아키텍처">
+      <img src="images/VPCE.png" style="width:100%; border-radius:8px; border:1px solid #e8e8e8;" alt="VPC Endpoint 기반 아키텍처">
       <p style="font-size:12px; color:#999; text-align:center; margin-top:8px;">VPC Endpoint 기반 대안 아키텍처</p>
     </div>
   </div>
