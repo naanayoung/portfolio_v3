@@ -435,16 +435,6 @@
     <div class="block-text">
       <p>NAT Gateway로 구축 후 비용 구조를 점검하면서, Private Subnet의 Lambda가 SQS·SNS·DynamoDB 등 관리형 서비스에 접근하는 경로를 VPC Endpoint로 대체했을 떄의 비용을 비교 검토했습니다. AWS Pricing Calculator로 2-AZ 환경, 월 30만건 요청 기준으로 시뮬레이션했습니다. </p>
     </div>
-    <div class="result-grid" style="margin-top:12px; grid-template-columns: 1fr 1fr;">
-      <div class="result-card">
-        <div class="result-num">36%+</div>
-        <div class="result-label">VPC Endpoint 전환 시<br>비용 절감</div>
-      </div>
-      <div class="result-card">
-        <div class="result-num">2 vs 7</div>
-        <div class="result-label">NAT Gateway 개수<br>vs VPC Endpoint 개수</div>
-      </div>
-    </div>
     <div class="block-text" style="margin-top:12px">
       <p>VPC Endpoint는 서비스별·AZ별 개별 구성이 필요해 복잡도가 높지만, 데이터 처리 비용이 낮아 해당 조건에서 약 36% 절감이 가능하고, 트래픽이 클수록 절감 폭이 커집니다.</p>
     </div>
